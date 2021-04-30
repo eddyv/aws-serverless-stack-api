@@ -99,6 +99,6 @@ functions:
     handler: billing.main
     events:
       - http:
-        path: billing
-        method: post
-        authorizer: aws_iam
+          path: billing
+          method: post
+          authorizer: aws_iam
