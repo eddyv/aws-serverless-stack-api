@@ -62,3 +62,9 @@ functions:
       - http:
           path: notes/{id}
           method: put
+  delete:
+    handler: delete.main
+    events:
+      - http:
+          path: notes/{id}
+          method: delete
