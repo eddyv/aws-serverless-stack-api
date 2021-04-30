@@ -18,6 +18,7 @@ provider:
 
   environment:
     tableName: notes
+    stripeSecretKey: ${env:STRIPE_SECRET_KEY}
 
   # defines the permission policy for the lambda func
   # in this case, we grant functions with permissions to access dynamodb
@@ -81,7 +82,6 @@ functions:
           path: notes/{id}
           method: put
           authorizer: aws_iam
-
   delete:
     # Defines an HTTP API endpoint that calls the main function in delete.js
     # - path: url path is /notes/{id}
@@ -92,3 +92,13 @@ functions:
           path: notes/{id}
           method: delete
           authorizer: aws_iam
+  billing:
+    # Defines an HTTP API endpoint that calls the main function in billing.js
+    # - path: url path is /billing
+    # - method: POST request
+    handler: billing.main
+    events:
+      - http:
+        path: billing
+        method: post
+        authorizer: aws_iam
