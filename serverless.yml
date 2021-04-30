@@ -1,7 +1,7 @@
 # NOTE: update this with your service name
 service: notes-api
 
-# Create an optimized package for our functions 
+# Create an optimized package for our functions
 package:
   individually: true
 
@@ -44,3 +44,9 @@ functions:
       - http:
           path: notes
           method: post
+  get:
+    handler: get.main
+    events:
+      - http:
+          path: nodes/{id}
+          method: get
