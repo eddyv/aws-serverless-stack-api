@@ -10,14 +10,23 @@ plugins:
   - serverless-offline
   - serverless-dotenv-plugin # Load .env as environment variables
 
+custom:
+  # Our stage is based on what is passed in when running serverless
+  # commands. Or falls back to what we have set in the provider section.
+  stage: ${opt:stage, self:provider.stage}
+  # Name of the SST app that's deploying our infrastructure
+  sstApp: ${self:custom.stage}-notes-infra
+
 provider:
   name: aws
   runtime: nodejs12.x
   stage: dev
   region: us-east-1
 
+  # These environment variables are made available to our functions
+  # under process.env.
   environment:
-    tableName: notes
+    tableName: !ImportValue "${self:custom.sstApp}-TableName"
     stripeSecretKey: ${env:STRIPE_SECRET_KEY}
 
   # defines the permission policy for the lambda func
@@ -32,7 +41,9 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
         - dynamodb:DescribeTable
-      Resource: "arn:aws:dynamodb:us-east-1:204494108705:table/notes"
+      # Restrict our IAM role permissions to
+      # the specific table for the stage
+      Resource: !ImportValue "${self.custom.sstApp}-TableArn"
 
 functions:
   hello:
@@ -113,3 +124,5 @@ functions:
 resources:
   # API Gateway Errors
   - ${file(resources/api-gateway-errors.yml)}
+  # Cognito Identity Pool Policy
+  - ${file(resources/cognito-policy.yml)}
